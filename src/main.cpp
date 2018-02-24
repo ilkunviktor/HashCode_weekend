@@ -64,37 +64,128 @@ int main()
 		ifstream fileIn;
 		fileIn.open(filePathIn);
 		assert(fileIn.is_open());
+		
+		uint rowsCount = 0;
+		uint slotsCount = 0;
+		uint unSlotsCount = 0;
+		uint poolsCount = 0;
+		uint serversCount = 0;
 
-		//fileIn >>
+		fileIn >> rowsCount >> slotsCount >> unSlotsCount >> poolsCount >> serversCount;
+		
+		struct Point
+		{
+			uint row = 0;
+			uint col = 0;
+		};
+
+		struct UnSlot
+		{
+			uint id = 0;
+			Point point;
+		};
+
+		vector<ptr<UnSlot>> unSlots;
+
+		for (uint i = 0; i < unSlotsCount; ++i)
+		{
+			ptr<UnSlot> unSlot = make<UnSlot>();
+			unSlot->id = i;
+			fileIn >> unSlot->point.row >> unSlot->point.col;
+			unSlots.emplace_back(unSlot);
+		}
+
+		struct Server
+		{
+			uint id = 0;
+			uint slotsCount = 0;
+			uint capacity = 0;
+			bool allocated = false;
+			Point point;
+			uint poolId = 0;
+		};
+
+		vector<ptr<Server>> servers;
+
+		for (uint i = 0; i < serversCount; ++i)
+		{
+			ptr<Server> server = make<Server>();
+			server->id = i;
+			fileIn >> server->slotsCount >> server->capacity;
+			servers.emplace_back(server);
+		}
 
 		fileIn.close();
 
 		// solve
-
-		/*
-		struct sss
+		struct Row
 		{
-			uint a = 1;
+			uint id = 0;
+			set<uint> bad;
 		};
 
-		ptr<sss> s1 = make_shared<sss>();
-		ptr<sss> s2 = make_shared<sss>();
-		s2->a = 2;
-		vector<ptr<sss>> v1;
-		v1.push_back(s1);
-		v1.push_back(s2);
-		vector<ptr<sss>> v2;
-		transform(v1.begin(), v1.end(), back_inserter(v2), CloneFunctor<sss>());
-		v2[0]->a = 3;
-		*/
+		vector<ptr<Row>> rows; // key = row id
+	
+		for (uint i = 0; i < rowsCount; ++i)
+		{
+			ptr<Row> row = make<Row>();
+			row->id = i;
+			rows.emplace_back(row);
+		}
 
+		for (auto&& unslot : unSlots)
+		{
+			rows[unslot->point.row]->bad.insert(unslot->point.col);
+		}
+
+		vector<ptr<Server>> rowsP;
+		copy(rows.begin(), rows.end(), back_inserter(rowsP));
+		sort(rowsP.begin(), rowsP.end(), [](const ptr<Row>& r1, const ptr<Row>& r2)
+		{
+			r1->bad.size() > r1->bad.size();
+		});
+
+		/*struct Pool
+		{
+			vector<ptr<Server>> serverPlaced;
+		};*/
+
+		vector<ptr<Server>> serversP;
+		copy(servers.begin(), servers.end(), back_inserter(serversP));
+
+		sort(serversP.begin(), serversP.end(), [](const ptr<Server>& s1, const ptr<Server>& s2)
+		{
+			s1->slotsCount < s2->slotsCount;
+		});
+
+		for (auto&& rowP : rowsP)
+		{
+			for(uint i = 0; i < poolsCount; ++i)
+		}
+
+		while (!serversP.empty())
+		{
+
+		}
 
 		// output
 		ofstream fileOut;
 		fileOut.open(filePathOut);
 		assert(fileOut.is_open());
 
-		// fileOut <<  << endl;
+		for (const auto& server : servers)
+		{
+			if (server->allocated)
+			{
+				fileOut << to_string(server->point.row) << " " << 
+					to_string(server->point.col) << " " << 
+					to_string(server->poolId) << endl;
+			}
+			else
+			{
+				fileOut << "x" << endl;
+			}
+		}
 
 		fileOut.close();
 
