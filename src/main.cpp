@@ -15,24 +15,28 @@
 #include <memory>
 #include <numeric>
 #include <filesystem>
+#include <functional>
+#include <iterator>
+#include <queue>
+
+#define ptr		std::shared_ptr
+#define make	std::make_shared
 
 using namespace std;
 
 using uint = uint64_t;
 
-struct BestObject
-{
-	uint id = 0;
-	uint weight = 0;
-	uint score = 0;
+template<typename T>
+class CloneFunctor {
+public:
+	ptr<T> operator()(ptr<T> elem)
+	{
+		ptr<T> elemNew = make<T>();
+		memcpy(elemNew.get(), elem.get(), sizeof(T));
+
+		return elemNew;
+	}
 };
-
-vector<BestObject> FindBestObjects(uint weightFree, vector<BestObject>& objects)
-{
-	vector<BestObject> result;
-
-	return result;
-}
 
 int main()
 {
@@ -66,6 +70,23 @@ int main()
 		fileIn.close();
 
 		// solve
+
+		/*
+		struct sss
+		{
+			uint a = 1;
+		};
+
+		ptr<sss> s1 = make_shared<sss>();
+		ptr<sss> s2 = make_shared<sss>();
+		s2->a = 2;
+		vector<ptr<sss>> v1;
+		v1.push_back(s1);
+		v1.push_back(s2);
+		vector<ptr<sss>> v2;
+		transform(v1.begin(), v1.end(), back_inserter(v2), CloneFunctor<sss>());
+		v2[0]->a = 3;
+		*/
 
 
 		// output
